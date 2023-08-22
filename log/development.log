@@ -1,0 +1,612 @@
+  [1m[36mActiveRecord::SchemaMigration Pluck (1.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (1.4ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (51.3ms)[0m  [1m[35mDROP DATABASE IF EXISTS "tweetable_development"[0m
+  [1m[35m (32.0ms)[0m  [1m[35mDROP DATABASE IF EXISTS "tweetable_test"[0m
+  [1m[35m (192.7ms)[0m  [1m[35mCREATE DATABASE "tweetable_development" ENCODING = 'unicode'[0m
+  [1m[35m (68.3ms)[0m  [1m[35mCREATE DATABASE "tweetable_test" ENCODING = 'unicode'[0m
+  [1m[35m (18.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_try_advisory_lock(1994796900278912625)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to DeviseCreateUsers (20230503023815)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (8.9ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp(6), "remember_created_at" timestamp(6), "username" character varying DEFAULT '' NOT NULL, "name" character varying DEFAULT '' NOT NULL, "role" integer DEFAULT 0, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_reset_password_token" ON "users" ("reset_password_token")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_username" ON "users" ("username")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20230503023815"]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateTweets (20230503030344)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE TABLE "tweets" ("id" bigserial primary key, "body" text, "replies_count" integer DEFAULT 0, "likes_count" integer DEFAULT 0, "user_id" bigint NOT NULL, "replied_to_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_003928b7f5"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_tweets_on_user_id" ON "tweets" ("user_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_tweets_on_replied_to_id" ON "tweets" ("replied_to_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20230503030344"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateLikes (20230503030358)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (6.3ms)[0m  [1m[35mCREATE TABLE "likes" ("id" bigserial primary key, "user_id" bigint NOT NULL, "tweet_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_1e09b5dabf"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_d994727f92"
+FOREIGN KEY ("tweet_id")
+  REFERENCES "tweets" ("id")
+)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_likes_on_user_id" ON "likes" ("user_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_likes_on_tweet_id" ON "likes" ("tweet_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (2.8ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20230503030358"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateActiveStorageTables (20230504022336)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "active_storage_blobs" ("id" bigserial primary key, "key" character varying NOT NULL, "filename" character varying NOT NULL, "content_type" character varying, "metadata" text, "service_name" character varying NOT NULL, "byte_size" bigint NOT NULL, "checksum" character varying, "created_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_active_storage_blobs_on_key" ON "active_storage_blobs" ("key")[0m
+  [1m[35m (5.7ms)[0m  [1m[35mCREATE TABLE "active_storage_attachments" ("id" bigserial primary key, "name" character varying NOT NULL, "record_type" character varying NOT NULL, "record_id" bigint NOT NULL, "blob_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_c3b3935057"
+FOREIGN KEY ("blob_id")
+  REFERENCES "active_storage_blobs" ("id")
+)[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE INDEX "index_active_storage_attachments_on_blob_id" ON "active_storage_attachments" ("blob_id")[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_active_storage_attachments_uniqueness" ON "active_storage_attachments" ("record_type", "record_id", "name", "blob_id")[0m
+  [1m[35m (3.9ms)[0m  [1m[35mCREATE TABLE "active_storage_variant_records" ("id" bigserial primary key, "blob_id" bigint NOT NULL, "variation_digest" character varying NOT NULL, CONSTRAINT "fk_rails_993965df05"
+FOREIGN KEY ("blob_id")
+  REFERENCES "active_storage_blobs" ("id")
+)[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_active_storage_variant_records_uniqueness" ON "active_storage_variant_records" ("blob_id", "variation_digest")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20230504022336"]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Create (3.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "development"], ["created_at", "2023-08-13 23:01:09.693794"], ["updated_at", "2023-08-13 23:01:09.693794"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_advisory_unlock(1994796900278912625)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mLike Delete All (1.6ms)[0m  [1m[31mDELETE FROM "likes"[0m
+  [1m[36mTweet Delete All (1.1ms)[0m  [1m[31mDELETE FROM "tweets"[0m
+  [1m[36mUser Delete All (1.9ms)[0m  [1m[31mDELETE FROM "users"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user0@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."username" = $1 LIMIT $2[0m  [["username", "isaiah"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user0@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "username", "name", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["email", "user0@gmail.com"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["username", "isaiah"], ["name", "Jeffrey Harvey"], ["role", 0], ["created_at", "2023-08-13 23:01:18.637410"], ["updated_at", "2023-08-13 23:01:18.637410"]]
+  [1m[36mActiveStorage::Blob Load (2.3ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" INNER JOIN "active_storage_attachments" ON "active_storage_blobs"."id" = "active_storage_attachments"."blob_id" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 1], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 1], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Blob Create (0.6ms)[0m  [1m[32mINSERT INTO "active_storage_blobs" ("key", "filename", "content_type", "metadata", "service_name", "byte_size", "checksum", "created_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["key", "c0kcog4k8481xfwffsvx52pg6vn0"], ["filename", "0.jpg"], ["content_type", "image/jpeg"], ["metadata", "{\"identified\":true}"], ["service_name", "local"], ["byte_size", 1860], ["checksum", "+slvvd0Xk0mJ26kqX6SQKw=="], ["created_at", "2023-08-13 23:01:18.678956"]]
+  [1m[36mActiveStorage::Attachment Create (0.9ms)[0m  [1m[32mINSERT INTO "active_storage_attachments" ("name", "record_type", "record_id", "blob_id", "created_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["name", "avatar"], ["record_type", "User"], ["record_id", 1], ["blob_id", 1], ["created_at", "2023-08-13 23:01:18.680324"]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = $1 WHERE "users"."id" = $2[0m  [["updated_at", "2023-08-13 23:01:18.681996"], ["id", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+[36m  Disk Storage (0.5ms) [0m[32mUploaded file to key: c0kcog4k8481xfwffsvx52pg6vn0 (checksum: +slvvd0Xk0mJ26kqX6SQKw==)[0m
+[ActiveJob] Enqueued ActiveStorage::AnalyzeJob (Job ID: 2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc) to Async(default) with arguments: #<GlobalID:0x000000010929c408 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/1>>
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Create (2.0ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "My vocabulary did this to me. Your love will let you go on…"], ["replies_count", 0], ["likes_count", 0], ["user_id", 1], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:18.696416"], ["updated_at", "2023-08-13 23:01:18.696416"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc]   [1m[36mActiveStorage::Blob Load (0.4ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc] Performing ActiveStorage::AnalyzeJob (Job ID: 2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc) from Async(default) enqueued at 2023-08-13T23:01:18Z with arguments: #<GlobalID:0x0000000109567d90 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/1>>
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc] [36m  Disk Storage (0.1ms) [0m[34mDownloaded file from key: c0kcog4k8481xfwffsvx52pg6vn0[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc] Skipping image analysis because the ruby-vips gem isn't installed
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc]   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc]   [1m[36mActiveStorage::Blob Update (0.2ms)[0m  [1m[33mUPDATE "active_storage_blobs" SET "metadata" = $1 WHERE "active_storage_blobs"."id" = $2[0m  [["metadata", "{\"identified\":true,\"analyzed\":true}"], ["id", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc]   [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc] Performed ActiveStorage::AnalyzeJob (Job ID: 2f074bb8-dea3-4b2e-91f5-4c6e8bd0badc) from Async(default) in 22.53ms
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user1@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."username" = $1 LIMIT $2[0m  [["username", "vern_corwin"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user1@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Create (1.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "username", "name", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["email", "user1@gmail.com"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["username", "vern_corwin"], ["name", "Myrle Pouros"], ["role", 0], ["created_at", "2023-08-13 23:01:19.318881"], ["updated_at", "2023-08-13 23:01:19.318881"]]
+  [1m[36mActiveStorage::Blob Load (0.4ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" INNER JOIN "active_storage_attachments" ON "active_storage_blobs"."id" = "active_storage_attachments"."blob_id" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 2], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 2], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Blob Create (0.3ms)[0m  [1m[32mINSERT INTO "active_storage_blobs" ("key", "filename", "content_type", "metadata", "service_name", "byte_size", "checksum", "created_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["key", "rs74lswoh989pvkzdwujopjgaavj"], ["filename", "1.jpg"], ["content_type", "image/jpeg"], ["metadata", "{\"identified\":true}"], ["service_name", "local"], ["byte_size", 2256], ["checksum", "KE/R7qptgraert5vZm2F5Q=="], ["created_at", "2023-08-13 23:01:19.323585"]]
+  [1m[36mActiveStorage::Attachment Create (0.2ms)[0m  [1m[32mINSERT INTO "active_storage_attachments" ("name", "record_type", "record_id", "blob_id", "created_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["name", "avatar"], ["record_type", "User"], ["record_id", 2], ["blob_id", 2], ["created_at", "2023-08-13 23:01:19.324610"]]
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = $1 WHERE "users"."id" = $2[0m  [["updated_at", "2023-08-13 23:01:19.325392"], ["id", 2]]
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+[36m  Disk Storage (0.5ms) [0m[32mUploaded file to key: rs74lswoh989pvkzdwujopjgaavj (checksum: KE/R7qptgraert5vZm2F5Q==)[0m
+[ActiveJob] Enqueued ActiveStorage::AnalyzeJob (Job ID: c41fea6b-71cc-4e39-aee9-dae59e5eeb11) to Async(default) with arguments: #<GlobalID:0x00000001096b6228 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/2>>
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.3ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Is it not meningitis?"], ["replies_count", 0], ["likes_count", 0], ["user_id", 2], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:19.330220"], ["updated_at", "2023-08-13 23:01:19.330220"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11]   [1m[36mActiveStorage::Blob Load (0.3ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11] Performing ActiveStorage::AnalyzeJob (Job ID: c41fea6b-71cc-4e39-aee9-dae59e5eeb11) from Async(default) enqueued at 2023-08-13T23:01:19Z with arguments: #<GlobalID:0x00000001096f6eb8 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/2>>
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11] [36m  Disk Storage (0.2ms) [0m[34mDownloaded file from key: rs74lswoh989pvkzdwujopjgaavj[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11] Skipping image analysis because the ruby-vips gem isn't installed
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11]   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11]   [1m[36mActiveStorage::Blob Update (0.2ms)[0m  [1m[33mUPDATE "active_storage_blobs" SET "metadata" = $1 WHERE "active_storage_blobs"."id" = $2[0m  [["metadata", "{\"identified\":true,\"analyzed\":true}"], ["id", 2]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11]   [1m[36mTRANSACTION (4.1ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [c41fea6b-71cc-4e39-aee9-dae59e5eeb11] Performed ActiveStorage::AnalyzeJob (Job ID: c41fea6b-71cc-4e39-aee9-dae59e5eeb11) from Async(default) in 10.56ms
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user2@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (6.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."username" = $1 LIMIT $2[0m  [["username", "adrian"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user2@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "username", "name", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["email", "user2@gmail.com"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["username", "adrian"], ["name", "Johnathon Luettgen"], ["role", 0], ["created_at", "2023-08-13 23:01:20.058806"], ["updated_at", "2023-08-13 23:01:20.058806"]]
+  [1m[36mActiveStorage::Blob Load (3.5ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" INNER JOIN "active_storage_attachments" ON "active_storage_blobs"."id" = "active_storage_attachments"."blob_id" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 3], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 3], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Blob Create (0.5ms)[0m  [1m[32mINSERT INTO "active_storage_blobs" ("key", "filename", "content_type", "metadata", "service_name", "byte_size", "checksum", "created_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["key", "a1bftb21ixck4fkrg5i6ljo2ijgo"], ["filename", "2.jpg"], ["content_type", "image/jpeg"], ["metadata", "{\"identified\":true}"], ["service_name", "local"], ["byte_size", 2003], ["checksum", "uY63eY87RpX1+3WuU/bU+g=="], ["created_at", "2023-08-13 23:01:20.065822"]]
+  [1m[36mActiveStorage::Attachment Create (0.2ms)[0m  [1m[32mINSERT INTO "active_storage_attachments" ("name", "record_type", "record_id", "blob_id", "created_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["name", "avatar"], ["record_type", "User"], ["record_id", 3], ["blob_id", 3], ["created_at", "2023-08-13 23:01:20.067098"]]
+  [1m[36mUser Update (0.7ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = $1 WHERE "users"."id" = $2[0m  [["updated_at", "2023-08-13 23:01:20.067861"], ["id", 3]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+[36m  Disk Storage (0.5ms) [0m[32mUploaded file to key: a1bftb21ixck4fkrg5i6ljo2ijgo (checksum: uY63eY87RpX1+3WuU/bU+g==)[0m
+[ActiveJob] Enqueued ActiveStorage::AnalyzeJob (Job ID: 395ec789-3f17-489c-8297-81fdd4946aec) to Async(default) with arguments: #<GlobalID:0x00000001098464f8 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/3>>
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.5ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "No comment."], ["replies_count", 0], ["likes_count", 0], ["user_id", 3], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:20.073059"], ["updated_at", "2023-08-13 23:01:20.073059"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec]   [1m[36mActiveStorage::Blob Load (0.3ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec] Performing ActiveStorage::AnalyzeJob (Job ID: 395ec789-3f17-489c-8297-81fdd4946aec) from Async(default) enqueued at 2023-08-13T23:01:20Z with arguments: #<GlobalID:0x00000001098eda00 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/3>>
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec] [36m  Disk Storage (0.1ms) [0m[34mDownloaded file from key: a1bftb21ixck4fkrg5i6ljo2ijgo[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec] Skipping image analysis because the ruby-vips gem isn't installed
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec]   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec]   [1m[36mActiveStorage::Blob Update (0.4ms)[0m  [1m[33mUPDATE "active_storage_blobs" SET "metadata" = $1 WHERE "active_storage_blobs"."id" = $2[0m  [["metadata", "{\"identified\":true,\"analyzed\":true}"], ["id", 3]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec]   [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [395ec789-3f17-489c-8297-81fdd4946aec] Performed ActiveStorage::AnalyzeJob (Job ID: 395ec789-3f17-489c-8297-81fdd4946aec) from Async(default) in 6.65ms
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user3@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."username" = $1 LIMIT $2[0m  [["username", "hal_becker"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user3@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "username", "name", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["email", "user3@gmail.com"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["username", "hal_becker"], ["name", "Juan Glover"], ["role", 0], ["created_at", "2023-08-13 23:01:20.871438"], ["updated_at", "2023-08-13 23:01:20.871438"]]
+  [1m[36mActiveStorage::Blob Load (0.3ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" INNER JOIN "active_storage_attachments" ON "active_storage_blobs"."id" = "active_storage_attachments"."blob_id" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 4], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 4], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Blob Create (0.2ms)[0m  [1m[32mINSERT INTO "active_storage_blobs" ("key", "filename", "content_type", "metadata", "service_name", "byte_size", "checksum", "created_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["key", "7gl1g6gcc8hditxzwpmbnqp3l3rf"], ["filename", "3.jpg"], ["content_type", "image/jpeg"], ["metadata", "{\"identified\":true}"], ["service_name", "local"], ["byte_size", 1824], ["checksum", "Pb2BDwtDwy+BwtUWVzpKJw=="], ["created_at", "2023-08-13 23:01:20.874690"]]
+  [1m[36mActiveStorage::Attachment Create (0.3ms)[0m  [1m[32mINSERT INTO "active_storage_attachments" ("name", "record_type", "record_id", "blob_id", "created_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["name", "avatar"], ["record_type", "User"], ["record_id", 4], ["blob_id", 4], ["created_at", "2023-08-13 23:01:20.875599"]]
+  [1m[36mUser Update (0.5ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = $1 WHERE "users"."id" = $2[0m  [["updated_at", "2023-08-13 23:01:20.876477"], ["id", 4]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+[36m  Disk Storage (0.5ms) [0m[32mUploaded file to key: 7gl1g6gcc8hditxzwpmbnqp3l3rf (checksum: Pb2BDwtDwy+BwtUWVzpKJw==)[0m
+[ActiveJob] Enqueued ActiveStorage::AnalyzeJob (Job ID: 18700511-8a52-4779-b5e7-bbc8b12bf70f) to Async(default) with arguments: #<GlobalID:0x0000000109a440e8 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/4>>
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.4ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Do you want me to come with you?"], ["replies_count", 0], ["likes_count", 0], ["user_id", 4], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:20.881286"], ["updated_at", "2023-08-13 23:01:20.881286"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f]   [1m[36mActiveStorage::Blob Load (0.8ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f] Performing ActiveStorage::AnalyzeJob (Job ID: 18700511-8a52-4779-b5e7-bbc8b12bf70f) from Async(default) enqueued at 2023-08-13T23:01:20Z with arguments: #<GlobalID:0x0000000109a84170 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/4>>
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f] [36m  Disk Storage (0.2ms) [0m[34mDownloaded file from key: 7gl1g6gcc8hditxzwpmbnqp3l3rf[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f] Skipping image analysis because the ruby-vips gem isn't installed
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f]   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f]   [1m[36mActiveStorage::Blob Update (0.3ms)[0m  [1m[33mUPDATE "active_storage_blobs" SET "metadata" = $1 WHERE "active_storage_blobs"."id" = $2[0m  [["metadata", "{\"identified\":true,\"analyzed\":true}"], ["id", 4]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f]   [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [18700511-8a52-4779-b5e7-bbc8b12bf70f] Performed ActiveStorage::AnalyzeJob (Job ID: 18700511-8a52-4779-b5e7-bbc8b12bf70f) from Async(default) in 10.4ms
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user4@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."username" = $1 LIMIT $2[0m  [["username", "marcela.torphy"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "user4@gmail.com"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "username", "name", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["email", "user4@gmail.com"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["username", "marcela.torphy"], ["name", "Terresa Davis"], ["role", 0], ["created_at", "2023-08-13 23:01:21.621465"], ["updated_at", "2023-08-13 23:01:21.621465"]]
+  [1m[36mActiveStorage::Blob Load (0.3ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" INNER JOIN "active_storage_attachments" ON "active_storage_blobs"."id" = "active_storage_attachments"."blob_id" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 5], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 5], ["record_type", "User"], ["name", "avatar"], ["LIMIT", 1]]
+  [1m[36mActiveStorage::Blob Create (0.2ms)[0m  [1m[32mINSERT INTO "active_storage_blobs" ("key", "filename", "content_type", "metadata", "service_name", "byte_size", "checksum", "created_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["key", "ug74tec21upmp827uuks28ipx1y5"], ["filename", "4.jpg"], ["content_type", "image/jpeg"], ["metadata", "{\"identified\":true}"], ["service_name", "local"], ["byte_size", 1993], ["checksum", "8zaT3d2nvbxSiQ9STAhrsQ=="], ["created_at", "2023-08-13 23:01:21.624702"]]
+  [1m[36mActiveStorage::Attachment Create (0.2ms)[0m  [1m[32mINSERT INTO "active_storage_attachments" ("name", "record_type", "record_id", "blob_id", "created_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["name", "avatar"], ["record_type", "User"], ["record_id", 5], ["blob_id", 5], ["created_at", "2023-08-13 23:01:21.625677"]]
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = $1 WHERE "users"."id" = $2[0m  [["updated_at", "2023-08-13 23:01:21.626405"], ["id", 5]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+[36m  Disk Storage (0.5ms) [0m[32mUploaded file to key: ug74tec21upmp827uuks28ipx1y5 (checksum: 8zaT3d2nvbxSiQ9STAhrsQ==)[0m
+[ActiveJob] Enqueued ActiveStorage::AnalyzeJob (Job ID: 82547cd0-a44e-4072-9bba-f0b8a829bb2b) to Async(default) with arguments: #<GlobalID:0x0000000109e352d8 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/5>>
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.4ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Does nobody understand?"], ["replies_count", 0], ["likes_count", 0], ["user_id", 5], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.631082"], ["updated_at", "2023-08-13 23:01:21.631082"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "users"[0m
+  [1m[36mTweet Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "tweets"[0m
+  [1m[36mTweet Load (0.8ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets"[0m
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (2.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.5ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I went the distance."], ["replies_count", 0], ["likes_count", 0], ["user_id", 1], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.641017"], ["updated_at", "2023-08-13 23:01:21.641017"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.4ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 1], ["updated_at", "2023-08-13 23:01:21.647766"], ["id", 6]]
+  [1m[36mTweet Update All (0.6ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (6.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.9ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I'll be in Hell before you start breakfast! Let her rip!"], ["replies_count", 0], ["likes_count", 0], ["user_id", 2], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.660376"], ["updated_at", "2023-08-13 23:01:21.660376"]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b]   [1m[36mActiveStorage::Blob Load (0.5ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b] Performing ActiveStorage::AnalyzeJob (Job ID: 82547cd0-a44e-4072-9bba-f0b8a829bb2b) from Async(default) enqueued at 2023-08-13T23:01:21Z with arguments: #<GlobalID:0x000000010a06d0a0 @uri=#<URI::GID gid://tweetable/ActiveStorage::Blob/5>>
+  [1m[36mTweet Update (0.5ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 1], ["updated_at", "2023-08-13 23:01:21.662909"], ["id", 7]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b] [36m  Disk Storage (0.1ms) [0m[34mDownloaded file from key: ug74tec21upmp827uuks28ipx1y5[0m
+  [1m[36mTweet Update All (3.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b] Skipping image analysis because the ruby-vips gem isn't installed
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b]   [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b]   [1m[36mActiveStorage::Blob Update (0.4ms)[0m  [1m[33mUPDATE "active_storage_blobs" SET "metadata" = $1 WHERE "active_storage_blobs"."id" = $2[0m  [["metadata", "{\"identified\":true,\"analyzed\":true}"], ["id", 5]]
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b]   [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+[ActiveJob] [ActiveStorage::AnalyzeJob] [82547cd0-a44e-4072-9bba-f0b8a829bb2b] Performed ActiveStorage::AnalyzeJob (Job ID: 82547cd0-a44e-4072-9bba-f0b8a829bb2b) from Async(default) in 9.67ms
+  [1m[36mTweet Create (0.5ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "You can get anything you want at Alice's restaurant."], ["replies_count", 0], ["likes_count", 0], ["user_id", 3], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.671335"], ["updated_at", "2023-08-13 23:01:21.671335"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 1], ["updated_at", "2023-08-13 23:01:21.672932"], ["id", 8]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I am confound."], ["replies_count", 0], ["likes_count", 0], ["user_id", 4], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.676408"], ["updated_at", "2023-08-13 23:01:21.676408"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 1], ["updated_at", "2023-08-13 23:01:21.677666"], ["id", 9]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.1ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I don't know."], ["replies_count", 0], ["likes_count", 0], ["user_id", 5], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.681010"], ["updated_at", "2023-08-13 23:01:21.681010"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 1], ["updated_at", "2023-08-13 23:01:21.682122"], ["id", 10]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.3ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Tape Seinfeld for me."], ["replies_count", 0], ["likes_count", 0], ["user_id", 1], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.686085"], ["updated_at", "2023-08-13 23:01:21.686085"]]
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 2], ["updated_at", "2023-08-13 23:01:21.688342"], ["id", 11]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 2]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Well, this is certainly a pleasant surprise."], ["replies_count", 0], ["likes_count", 0], ["user_id", 2], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.692280"], ["updated_at", "2023-08-13 23:01:21.692280"]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 2], ["updated_at", "2023-08-13 23:01:21.693929"], ["id", 12]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 2]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Am I dying, or is this my birthday?"], ["replies_count", 0], ["likes_count", 0], ["user_id", 3], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.698034"], ["updated_at", "2023-08-13 23:01:21.698034"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 2], ["updated_at", "2023-08-13 23:01:21.699357"], ["id", 13]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 2]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Create (1.0ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "All my possessions for a moment of time."], ["replies_count", 0], ["likes_count", 0], ["user_id", 4], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.702691"], ["updated_at", "2023-08-13 23:01:21.702691"]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 2], ["updated_at", "2023-08-13 23:01:21.705109"], ["id", 14]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 2]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I love you."], ["replies_count", 0], ["likes_count", 0], ["user_id", 5], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.708953"], ["updated_at", "2023-08-13 23:01:21.708953"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (3.7ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 2], ["updated_at", "2023-08-13 23:01:21.710320"], ["id", 15]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 2]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Create (1.0ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I regret that I should leave this world without again beholding him."], ["replies_count", 0], ["likes_count", 0], ["user_id", 1], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.718535"], ["updated_at", "2023-08-13 23:01:21.718535"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.7ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 3], ["updated_at", "2023-08-13 23:01:21.720914"], ["id", 16]]
+  [1m[36mTweet Update All (0.5ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 3]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.3ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Okay, I won't."], ["replies_count", 0], ["likes_count", 0], ["user_id", 2], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.725446"], ["updated_at", "2023-08-13 23:01:21.725446"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.6ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 3], ["updated_at", "2023-08-13 23:01:21.726997"], ["id", 17]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 3]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "It's stopped."], ["replies_count", 0], ["likes_count", 0], ["user_id", 3], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.731764"], ["updated_at", "2023-08-13 23:01:21.731764"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 3], ["updated_at", "2023-08-13 23:01:21.733076"], ["id", 18]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.3ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I don't think they even heard me."], ["replies_count", 0], ["likes_count", 0], ["user_id", 4], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.736695"], ["updated_at", "2023-08-13 23:01:21.736695"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 3], ["updated_at", "2023-08-13 23:01:21.738173"], ["id", 19]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 3]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I wish I could go with you."], ["replies_count", 0], ["likes_count", 0], ["user_id", 5], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.742213"], ["updated_at", "2023-08-13 23:01:21.742213"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.7ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 3], ["updated_at", "2023-08-13 23:01:21.743475"], ["id", 20]]
+  [1m[36mTweet Update All (0.7ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 3]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "One! Two! Three!"], ["replies_count", 0], ["likes_count", 0], ["user_id", 1], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.749393"], ["updated_at", "2023-08-13 23:01:21.749393"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 4], ["updated_at", "2023-08-13 23:01:21.750861"], ["id", 21]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 4]]
+  [1m[36mTRANSACTION (4.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.3ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I love you too, honey. Good luck with your show."], ["replies_count", 0], ["likes_count", 0], ["user_id", 2], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.758721"], ["updated_at", "2023-08-13 23:01:21.758721"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 4], ["updated_at", "2023-08-13 23:01:21.760347"], ["id", 22]]
+  [1m[36mTweet Update All (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 4]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I forgot something."], ["replies_count", 0], ["likes_count", 0], ["user_id", 3], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.764746"], ["updated_at", "2023-08-13 23:01:21.764746"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 4], ["updated_at", "2023-08-13 23:01:21.766113"], ["id", 23]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 4]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I want your bunk!"], ["replies_count", 0], ["likes_count", 0], ["user_id", 4], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.769902"], ["updated_at", "2023-08-13 23:01:21.769902"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 4], ["updated_at", "2023-08-13 23:01:21.771233"], ["id", 24]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 4]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.3ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "That's good. Go on, read some more."], ["replies_count", 0], ["likes_count", 0], ["user_id", 5], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.774930"], ["updated_at", "2023-08-13 23:01:21.774930"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.4ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 4], ["updated_at", "2023-08-13 23:01:21.776335"], ["id", 25]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 4]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Van Halen!"], ["replies_count", 0], ["likes_count", 0], ["user_id", 1], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.780720"], ["updated_at", "2023-08-13 23:01:21.780720"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 5], ["updated_at", "2023-08-13 23:01:21.781999"], ["id", 26]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 5]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Strike the tent."], ["replies_count", 0], ["likes_count", 0], ["user_id", 2], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.785531"], ["updated_at", "2023-08-13 23:01:21.785531"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 5], ["updated_at", "2023-08-13 23:01:21.786773"], ["id", 27]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 5]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "That was the best ice-cream soda I ever tasted."], ["replies_count", 0], ["likes_count", 0], ["user_id", 3], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.790382"], ["updated_at", "2023-08-13 23:01:21.790382"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 5], ["updated_at", "2023-08-13 23:01:21.791558"], ["id", 28]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 5]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "Goodnight, my darlings, I'll see you tomorrow."], ["replies_count", 0], ["likes_count", 0], ["user_id", 4], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.795157"], ["updated_at", "2023-08-13 23:01:21.795157"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 5], ["updated_at", "2023-08-13 23:01:21.796534"], ["id", 29]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 5]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Create (0.2ms)[0m  [1m[32mINSERT INTO "tweets" ("body", "replies_count", "likes_count", "user_id", "replied_to_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["body", "I want to go home."], ["replies_count", 0], ["likes_count", 0], ["user_id", 5], ["replied_to_id", nil], ["created_at", "2023-08-13 23:01:21.800180"], ["updated_at", "2023-08-13 23:01:21.800180"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTweet Update (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "replied_to_id" = $1, "updated_at" = $2 WHERE "tweets"."id" = $3[0m  [["replied_to_id", 5], ["updated_at", "2023-08-13 23:01:21.801494"], ["id", 30]]
+  [1m[36mTweet Update All (0.4ms)[0m  [1m[33mUPDATE "tweets" SET "replies_count" = COALESCE("replies_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["replies_count", 1], ["id", 5]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTweet Load (0.3ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.3ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 13], ["LIMIT", 1]]
+  [1m[36mLike Exists? (1.3ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 1], ["tweet_id", 13], ["LIMIT", 1]]
+  [1m[36mLike Create (0.9ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 1], ["tweet_id", 13], ["created_at", "2023-08-13 23:01:21.816608"], ["updated_at", "2023-08-13 23:01:21.816608"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 13]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (1.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Load (1.5ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 1], ["tweet_id", 5], ["LIMIT", 1]]
+  [1m[36mLike Create (0.3ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 1], ["tweet_id", 5], ["created_at", "2023-08-13 23:01:21.825839"], ["updated_at", "2023-08-13 23:01:21.825839"]]
+  [1m[36mTweet Update All (0.4ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 5]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.2ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 8], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 1], ["tweet_id", 8], ["LIMIT", 1]]
+  [1m[36mLike Create (0.4ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 1], ["tweet_id", 8], ["created_at", "2023-08-13 23:01:21.831349"], ["updated_at", "2023-08-13 23:01:21.831349"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 8]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.2ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 22], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 1], ["tweet_id", 22], ["LIMIT", 1]]
+  [1m[36mLike Create (0.3ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 1], ["tweet_id", 22], ["created_at", "2023-08-13 23:01:21.836100"], ["updated_at", "2023-08-13 23:01:21.836100"]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 22]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 10], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 1], ["tweet_id", 10], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 1], ["tweet_id", 10], ["created_at", "2023-08-13 23:01:21.840596"], ["updated_at", "2023-08-13 23:01:21.840596"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 10]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTweet Load (0.2ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 2], ["tweet_id", 9], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 2], ["tweet_id", 9], ["created_at", "2023-08-13 23:01:21.845875"], ["updated_at", "2023-08-13 23:01:21.845875"]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 9]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 14], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 2], ["tweet_id", 14], ["LIMIT", 1]]
+  [1m[36mLike Create (11.7ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 2], ["tweet_id", 14], ["created_at", "2023-08-13 23:01:21.850211"], ["updated_at", "2023-08-13 23:01:21.850211"]]
+  [1m[36mTweet Update All (0.4ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 14]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 22], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 2], ["tweet_id", 22], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 2], ["tweet_id", 22], ["created_at", "2023-08-13 23:01:21.867022"], ["updated_at", "2023-08-13 23:01:21.867022"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 22]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 30], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 2], ["tweet_id", 30], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 2], ["tweet_id", 30], ["created_at", "2023-08-13 23:01:21.872509"], ["updated_at", "2023-08-13 23:01:21.872509"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 30]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 10], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 2], ["tweet_id", 10], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 2], ["tweet_id", 10], ["created_at", "2023-08-13 23:01:21.876831"], ["updated_at", "2023-08-13 23:01:21.876831"]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 10]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTweet Load (0.2ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 3], ["tweet_id", 2], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 3], ["tweet_id", 2], ["created_at", "2023-08-13 23:01:21.881999"], ["updated_at", "2023-08-13 23:01:21.881999"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 2]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 24], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 3], ["tweet_id", 24], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 3], ["tweet_id", 24], ["created_at", "2023-08-13 23:01:21.886457"], ["updated_at", "2023-08-13 23:01:21.886457"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 24]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 30], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 3], ["tweet_id", 30], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 3], ["tweet_id", 30], ["created_at", "2023-08-13 23:01:21.891250"], ["updated_at", "2023-08-13 23:01:21.891250"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 30]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 3], ["tweet_id", 4], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 3], ["tweet_id", 4], ["created_at", "2023-08-13 23:01:21.898803"], ["updated_at", "2023-08-13 23:01:21.898803"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 4]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 23], ["LIMIT", 1]]
+  [1m[36mLike Exists? (4.3ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 3], ["tweet_id", 23], ["LIMIT", 1]]
+  [1m[36mLike Create (1.7ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 3], ["tweet_id", 23], ["created_at", "2023-08-13 23:01:21.907372"], ["updated_at", "2023-08-13 23:01:21.907372"]]
+  [1m[36mTweet Update All (0.5ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 23]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 18], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 3], ["tweet_id", 18], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 3], ["tweet_id", 18], ["created_at", "2023-08-13 23:01:21.914253"], ["updated_at", "2023-08-13 23:01:21.914253"]]
+  [1m[36mTweet Update All (0.5ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 18]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTweet Load (0.3ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 4], ["tweet_id", 17], ["LIMIT", 1]]
+  [1m[36mLike Create (0.4ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 4], ["tweet_id", 17], ["created_at", "2023-08-13 23:01:21.920289"], ["updated_at", "2023-08-13 23:01:21.920289"]]
+  [1m[36mTweet Update All (0.7ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 17]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 4], ["tweet_id", 19], ["LIMIT", 1]]
+  [1m[36mLike Create (0.6ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 4], ["tweet_id", 19], ["created_at", "2023-08-13 23:01:21.926507"], ["updated_at", "2023-08-13 23:01:21.926507"]]
+  [1m[36mTweet Update All (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 19]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 4], ["tweet_id", 2], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 4], ["tweet_id", 2], ["created_at", "2023-08-13 23:01:21.931613"], ["updated_at", "2023-08-13 23:01:21.931613"]]
+  [1m[36mTweet Update All (0.3ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 2]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 11], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 4], ["tweet_id", 11], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 4], ["tweet_id", 11], ["created_at", "2023-08-13 23:01:21.936037"], ["updated_at", "2023-08-13 23:01:21.936037"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 11]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 8], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 4], ["tweet_id", 8], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 4], ["tweet_id", 8], ["created_at", "2023-08-13 23:01:21.940473"], ["updated_at", "2023-08-13 23:01:21.940473"]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 8]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 12], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 4], ["tweet_id", 12], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 4], ["tweet_id", 12], ["created_at", "2023-08-13 23:01:21.945649"], ["updated_at", "2023-08-13 23:01:21.945649"]]
+  [1m[36mTweet Update All (0.1ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 12]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTweet Load (0.2ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 26], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 5], ["tweet_id", 26], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 5], ["tweet_id", 26], ["created_at", "2023-08-13 23:01:21.950541"], ["updated_at", "2023-08-13 23:01:21.950541"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 26]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.4ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 27], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 5], ["tweet_id", 27], ["LIMIT", 1]]
+  [1m[36mLike Create (0.2ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 5], ["tweet_id", 27], ["created_at", "2023-08-13 23:01:21.955505"], ["updated_at", "2023-08-13 23:01:21.955505"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 27]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mTweet Load (0.1ms)[0m  [1m[34mSELECT "tweets".* FROM "tweets" WHERE "tweets"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  [1m[36mLike Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "likes" WHERE "likes"."user_id" = $1 AND "likes"."tweet_id" = $2 LIMIT $3[0m  [["user_id", 5], ["tweet_id", 17], ["LIMIT", 1]]
+  [1m[36mLike Create (0.5ms)[0m  [1m[32mINSERT INTO "likes" ("user_id", "tweet_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["user_id", 5], ["tweet_id", 17], ["created_at", "2023-08-13 23:01:21.960808"], ["updated_at", "2023-08-13 23:01:21.960808"]]
+  [1m[36mTweet Update All (0.2ms)[0m  [1m[33mUPDATE "tweets" SET "likes_count" = COALESCE("likes_count", 0) + $1 WHERE "tweets"."id" = $2[0m  [["likes_count", 1], ["id", 17]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+Started GET "/" for 127.0.0.1 at 2023-08-13 19:01:31 -0400
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by TweetsController#index as HTML
+Completed 401 Unauthorized in 18ms (ActiveRecord: 0.0ms | Allocations: 6360)
+
+
+Started GET "/users/sign_in" for 127.0.0.1 at 2023-08-13 19:01:31 -0400
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/shared/_links.html.erb (Duration: 0.6ms | Allocations: 744)
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 13.1ms | Allocations: 4605)
+  Rendered layout layouts/application.html.erb (Duration: 229.4ms | Allocations: 93690)
+Completed 200 OK in 259ms (Views: 243.5ms | ActiveRecord: 8.2ms | Allocations: 104027)
+
+
+Started GET "/users/sign_in" for 127.0.0.1 at 2023-08-13 19:01:37 -0400
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/shared/_links.html.erb (Duration: 0.2ms | Allocations: 138)
+  Rendered devise/sessions/new.html.erb within layouts/application (Duration: 1.1ms | Allocations: 1264)
+  Rendered layout layouts/application.html.erb (Duration: 4.5ms | Allocations: 3575)
+Completed 200 OK in 6ms (Views: 4.7ms | ActiveRecord: 0.0ms | Allocations: 4457)
+
+
